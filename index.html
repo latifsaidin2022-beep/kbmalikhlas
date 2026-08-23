@@ -234,8 +234,8 @@
                 </button>
             </div>
 
-            <!-- MENU UTAMA DASHBOARD TUTOR (4 MENU KHUSUS) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- MENU UTAMA DASHBOARD TUTOR (5 MENU KHUSUS) -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <button onclick="switchSubMenuTutor('kirim-materi')" id="btn-sub-kirim-materi" class="sub-tutor-btn bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:border-emerald-500 transition text-center flex flex-col items-center gap-3 active-sub">
                     <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-xl">
                         <i class="fa-solid fa-file-arrow-up"></i>
@@ -243,6 +243,16 @@
                     <div>
                         <h4 class="font-bold text-slate-800 text-sm">Kirim Materi</h4>
                         <p class="text-[11px] text-slate-400">Unggah Modul / Bahan Ajar</p>
+                    </div>
+                </button>
+
+                <button onclick="switchSubMenuTutor('kisi-kisi')" id="btn-sub-kisi-kisi" class="sub-tutor-btn bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:border-emerald-500 transition text-center flex flex-col items-center gap-3">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">Kisi-Kisi</h4>
+                        <p class="text-[11px] text-slate-400">Kirim Kisi-Kisi Ulangan</p>
                     </div>
                 </button>
 
@@ -317,6 +327,46 @@
                 </div>
             </div>
 
+            <!-- SUB-KONTEN 1B: KISI-KISI (TARGET PAKET + KELAS SEPERTI MATERI) -->
+            <div id="sub-kisi-kisi" class="sub-tutor-content hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <h3 class="text-md font-bold text-emerald-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i> Form Kirim Kisi-Kisi Ulangan
+                </h3>
+                <form id="form-kisi-kisi" onsubmit="kirimKisiKisiHandler(event)" class="space-y-4 max-w-lg">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Kisi-Kisi</label>
+                        <input type="text" id="kisikisi-judul" placeholder="Contoh: Kisi-Kisi UAS Matematika Semester Ganjil" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Program Paket Target</label>
+                        <select id="kisikisi-paket" onchange="updatePilihanKelasKisiKisi()" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="">-- Pilih Paket --</option>
+                            <option value="Paket A">Paket A (Setara SD)</option>
+                            <option value="Paket B">Paket B (Setara SMP)</option>
+                            <option value="Paket C">Paket C (Setara SMA)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kelas Target</label>
+                        <select id="kisikisi-kelas" required disabled class="w-full px-3 py-2 border rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="">-- Pilih Paket Terlebih Dahulu --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Berkas Kisi-Kisi (PDF / Word / Foto)</label>
+                        <input type="file" id="kisikisi-file" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                    </div>
+                    <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-4 py-2 rounded-lg font-semibold shadow">Kirim Kisi-Kisi Ke Siswa</button>
+                </form>
+
+                <div class="pt-4 border-t">
+                    <h4 class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Kisi-Kisi Yang Sudah Saya Kirim</h4>
+                    <div id="daftar-kisikisi-saya" class="space-y-2">
+                        <!-- Diisi oleh JS, hanya milik tutor yang sedang login -->
+                    </div>
+                </div>
+            </div>
+
             <!-- SUB-KONTEN 2: NAMA SISWA -->
             <div id="sub-nama-siswa" class="sub-tutor-content hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
                 <h3 class="text-md font-bold text-emerald-800 border-b pb-2 flex items-center gap-2">
@@ -356,6 +406,25 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Deskripsi & Instruksi Tugas</label>
                         <textarea id="tugas-deskripsi" rows="3" placeholder="Tuliskan petunjuk pengerjaan tugas di sini..." class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Program Paket Target</label>
+                        <select id="tugas-paket" onchange="updatePilihanKelasTugas()" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="">-- Pilih Paket --</option>
+                            <option value="Paket A">Paket A (Setara SD)</option>
+                            <option value="Paket B">Paket B (Setara SMP)</option>
+                            <option value="Paket C">Paket C (Setara SMA)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kelas Target</label>
+                        <select id="tugas-kelas" required disabled class="w-full px-3 py-2 border rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="">-- Pilih Paket Terlebih Dahulu --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Lampiran Berkas Soal (opsional)</label>
+                        <input type="file" id="tugas-file" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                     </div>
                     <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-4 py-2 rounded-lg font-semibold shadow">Terbitkan Tugas</button>
                 </form>
@@ -868,6 +937,8 @@
             SISWA: 'pkbm_data_siswa',
             JADWAL: 'pkbm_data_jadwal',
             TUTOR: 'pkbm_data_tutor',
+            KISI_KISI: 'pkbm_data_kisikisi',
+            TUGAS_JAWABAN: 'pkbm_data_tugas_jawaban',
             KEHADIRAN_HARI_INI: 'pkbm_kehadiran_hari_ini',
             LOGIN_TUTOR: 'pkbm_login_tutor_id',
             LOGIN_ATTEMPT: 'pkbm_login_attempt_'
@@ -897,6 +968,105 @@
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
+        }
+
+        // ===================================================================
+        // PENYIMPANAN BERKAS (Kisi-Kisi, Lampiran Soal, Jawaban Foto Siswa)
+        //
+        // CATATAN JUJUR: Situs ini tidak punya server/backend — semua berkas yang
+        // diunggah tutor maupun siswa disimpan di penyimpanan browser (IndexedDB)
+        // milik PERANGKAT/BROWSER itu sendiri, bukan di server pusat. Artinya:
+        // kalau tutor mengunggah kisi-kisi dari laptopnya, berkas itu hanya
+        // tersimpan di browser laptop tersebut. Agar siswa di HP masing-masing
+        // benar-benar bisa mengunduhnya, situs ini perlu dijalankan dari satu
+        // perangkat/browser yang sama (misalnya komputer bersama di PKBM), atau
+        // ke depannya dipindahkan ke sistem dengan server sungguhan. Ini adalah
+        // batasan bawaan karena tidak ada backend, bukan bug.
+        // ===================================================================
+        const FILES_DB_NAME = 'pkbm_files_db';
+        const FILES_STORE = 'files';
+        let filesDbPromise = null;
+        const BATAS_UKURAN_FILE = 25 * 1024 * 1024; // 25MB per berkas, menjaga penyimpanan browser tidak cepat penuh
+
+        function buatIdUnik() {
+            return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+        }
+
+        function fileTerlaluBesar(file) {
+            return file.size > BATAS_UKURAN_FILE;
+        }
+
+        function openFilesDb() {
+            if (filesDbPromise) return filesDbPromise;
+            filesDbPromise = new Promise((resolve, reject) => {
+                if (!window.indexedDB) { reject(new Error('IndexedDB tidak didukung di browser ini.')); return; }
+                const req = indexedDB.open(FILES_DB_NAME, 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(FILES_STORE)) {
+                        db.createObjectStore(FILES_STORE, { keyPath: 'id' });
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+            return filesDbPromise;
+        }
+
+        // Simpan satu berkas (File dari <input type="file">) ke IndexedDB, kembalikan id-nya.
+        async function simpanFileKeDb(file) {
+            const id = buatIdUnik();
+            const db = await openFilesDb();
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction(FILES_STORE, 'readwrite');
+                tx.objectStore(FILES_STORE).put({ id, blob: file, name: file.name, type: file.type });
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+            return id;
+        }
+
+        async function ambilFileDariDb(id) {
+            const db = await openFilesDb();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(FILES_STORE, 'readonly');
+                const req = tx.objectStore(FILES_STORE).get(id);
+                req.onsuccess = () => resolve(req.result || null);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function hapusFileDariDb(id) {
+            if (!id) return;
+            try {
+                const db = await openFilesDb();
+                const tx = db.transaction(FILES_STORE, 'readwrite');
+                tx.objectStore(FILES_STORE).delete(id);
+            } catch (e) {
+                console.error('Gagal menghapus berkas dari penyimpanan:', e);
+            }
+        }
+
+        // Unduh berkas asli dari IndexedDB ke perangkat siswa/tutor yang sedang membuka situs ini.
+        async function unduhFileDariDb(id, namaFile) {
+            try {
+                const rec = await ambilFileDariDb(id);
+                if (!rec) {
+                    alert('Berkas tidak ditemukan di penyimpanan browser ini. Kemungkinan berkas diunggah dari perangkat/browser lain.');
+                    return;
+                }
+                const url = URL.createObjectURL(rec.blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = namaFile || rec.name || 'berkas';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+            } catch (e) {
+                console.error('Gagal mengunduh berkas:', e);
+                alert('Terjadi kesalahan saat mengunduh berkas.');
+            }
         }
 
         // Hash SHA-256 untuk password tutor (client-side).
@@ -1051,15 +1221,9 @@
             { tanggal: "2027-06-25", judul: "Pembagian Rapor & Libur Akhir Tahun Ajaran", kategori: "Kegiatan" }
         ];
 
-        // Data Kisi-Kisi Ulangan (statis/default per program paket)
-        const dataKisiKisiDefault = [
-            { paket: "Paket A", judul: "Kisi-Kisi Ulangan Tengah Semester", keterangan: "Meliputi Matematika Bab 1-3 dan Bahasa Indonesia Bab 1-2." },
-            { paket: "Paket A", judul: "Kisi-Kisi Ulangan Akhir Semester", keterangan: "Meliputi seluruh materi semester berjalan." },
-            { paket: "Paket B", judul: "Kisi-Kisi Ulangan Tengah Semester", keterangan: "Meliputi IPA Bab 1-3 dan IPS Bab 1-2." },
-            { paket: "Paket B", judul: "Kisi-Kisi Ulangan Akhir Semester", keterangan: "Meliputi seluruh materi semester berjalan." },
-            { paket: "Paket C", judul: "Kisi-Kisi Ujian Kesetaraan (Paket C)", keterangan: "Meliputi PKn, Matematika, Bahasa Indonesia, Bahasa Inggris, dan IPS." },
-            { paket: "Paket C", judul: "Kisi-Kisi Ulangan Tengah Semester", keterangan: "Meliputi materi semester berjalan sesuai jadwal tutor." }
-        ];
+        // Data Kisi-Kisi Ulangan — sekarang dikirim langsung oleh tutor lewat menu
+        // "Kisi-Kisi" di dashboard tutor (bukan daftar statis lagi), dengan target
+        // paket + kelas tertentu, dan menyertakan berkas asli yang bisa diunduh siswa.
 
         // Data Jadwal Pembelajaran (statis/default per program paket)
         const dataJadwalDefault = [
@@ -1334,6 +1498,8 @@
         let dataAbsen = loadFromStorage(STORAGE_KEYS.ABSEN, []);
         let dataPelajaran = loadFromStorage(STORAGE_KEYS.PELAJARAN, dataPelajaranDefault);
         let dataTugas = loadFromStorage(STORAGE_KEYS.TUGAS, []);
+        let dataTugasJawaban = loadFromStorage(STORAGE_KEYS.TUGAS_JAWABAN, []);
+        let dataKisiKisi = loadFromStorage(STORAGE_KEYS.KISI_KISI, []);
         let dataSiswa = loadFromStorage(STORAGE_KEYS.SISWA, dataSiswaDefault);
         let dataJadwal = loadFromStorage(STORAGE_KEYS.JADWAL, dataJadwalDefault);
 
@@ -1609,8 +1775,13 @@
             if (formMateri) formMateri.reset();
             updatePilihanKelas(); // kunci ulang dropdown kelas ke kondisi awal
 
+            const formKisiKisi = document.getElementById('form-kisi-kisi');
+            if (formKisiKisi) formKisiKisi.reset();
+            updatePilihanKelasKisiKisi();
+
             const formTugas = document.getElementById('form-tugas');
             if (formTugas) formTugas.reset();
+            updatePilihanKelasTugas();
         }
 
         // Buka Tampilan Khusus Dashboard Tutor
@@ -1620,6 +1791,7 @@
             renderTabelSiswaTutor();
             renderDaftarTugas();
             renderMateriSaya();
+            renderKisiKisiSaya();
             switchTab('dashboard-tutor');
             switchSubMenuTutor('kirim-materi');
         }
@@ -1647,10 +1819,11 @@
         }
 
         // JS UNTUK KELAS DINAMIS DI MENU UNGGAH MATERI TUTOR
-        function updatePilihanKelas() {
-            const paket = document.getElementById('materi-paket').value;
-            const selectKelas = document.getElementById('materi-kelas');
-
+        // Helper umum: isi ulang dropdown kelas sesuai paket yang dipilih.
+        // Dipakai bersama oleh form Kirim Materi, Kisi-Kisi, dan Tugas — supaya
+        // ketiganya konsisten menyaring sampai ke kelas yang tepat (harus sama
+        // persis dengan field "kelas" di dataSiswa).
+        function bangunOpsiKelas(selectKelas, paket) {
             selectKelas.innerHTML = ''; // Kosongkan opsi sebelumnya
 
             if (!paket) {
@@ -1664,8 +1837,6 @@
             selectKelas.classList.remove('bg-slate-50');
             selectKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>';
 
-            // PENTING: value di sini HARUS sama persis dengan field "kelas" di dataSiswa,
-            // supaya materi yang dikirim bisa disaring tepat sampai ke siswa yang benar.
             const opsiKelas = KELAS_OPSI_MATERI[paket] || [];
 
             opsiKelas.forEach(k => {
@@ -1674,6 +1845,18 @@
                 opt.textContent = `Kelas ${k}`;
                 selectKelas.appendChild(opt);
             });
+        }
+
+        function updatePilihanKelas() {
+            bangunOpsiKelas(document.getElementById('materi-kelas'), document.getElementById('materi-paket').value);
+        }
+
+        function updatePilihanKelasKisiKisi() {
+            bangunOpsiKelas(document.getElementById('kisikisi-kelas'), document.getElementById('kisikisi-paket').value);
+        }
+
+        function updatePilihanKelasTugas() {
+            bangunOpsiKelas(document.getElementById('tugas-kelas'), document.getElementById('tugas-paket').value);
         }
 
         // Materi baru sekarang benar-benar disimpan (localStorage) & langsung muncul di menu Ruang Siswa
@@ -1733,30 +1916,133 @@
             `).join('');
         }
 
-        // Tugas sekarang benar-benar tersimpan & tampil di daftar tugas
-        function simpanTugasHandler(e) {
+        // Kisi-Kisi dikirim tutor dengan target paket + kelas tertentu (sama seperti
+        // Kirim Materi), lengkap dengan berkas asli yang tersimpan di IndexedDB
+        // supaya siswa yang sesuai kelasnya bisa benar-benar mengunduhnya.
+        async function kirimKisiKisiHandler(e) {
+            e.preventDefault();
+            const judul = document.getElementById('kisikisi-judul').value.trim();
+            const paket = document.getElementById('kisikisi-paket').value;
+            const kelas = document.getElementById('kisikisi-kelas').value;
+            const fileInput = document.getElementById('kisikisi-file');
+
+            if (!judul || !paket || !kelas) {
+                alert('Mohon lengkapi semua kolom terlebih dahulu.');
+                return;
+            }
+            if (!fileInput.files.length) {
+                alert('Mohon pilih berkas kisi-kisi terlebih dahulu.');
+                return;
+            }
+            const file = fileInput.files[0];
+            if (fileTerlaluBesar(file)) {
+                alert('Ukuran berkas terlalu besar (maks. 25MB). Gunakan berkas yang lebih kecil.');
+                return;
+            }
+
+            let fileId;
+            try {
+                fileId = await simpanFileKeDb(file);
+            } catch (err) {
+                console.error(err);
+                alert('Gagal menyimpan berkas ke penyimpanan browser. Coba lagi.');
+                return;
+            }
+
+            dataKisiKisi.unshift({
+                id: buatIdUnik(),
+                judul, paket, kelas,
+                tutor: tutorLoginAktif ? tutorLoginAktif.nama : '-',
+                tutorId: tutorLoginAktif ? tutorLoginAktif.id : null,
+                fileId,
+                fileName: file.name
+            });
+            saveToStorage(STORAGE_KEYS.KISI_KISI, dataKisiKisi);
+            renderKisiKisiSaya();
+            renderRuangSiswa();
+
+            alert(`Kisi-kisi "${judul}" berhasil dikirim ke siswa ${paket} - Kelas ${kelas}!`);
+            e.target.reset();
+            updatePilihanKelasKisiKisi();
+        }
+
+        // Menampilkan HANYA kisi-kisi milik tutor yang sedang login (sama seperti Materi)
+        function renderKisiKisiSaya() {
+            const container = document.getElementById('daftar-kisikisi-saya');
+            if (!container || !tutorLoginAktif) return;
+
+            const milikSaya = dataKisiKisi.filter(k => k.tutorId === tutorLoginAktif.id);
+
+            if (milikSaya.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400">Anda belum mengirim kisi-kisi apapun.</p>';
+                return;
+            }
+
+            container.innerHTML = milikSaya.map(k => `
+                <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-center gap-3">
+                    <div>
+                        <p class="font-semibold text-sm text-slate-800">${escapeHtml(k.judul)}</p>
+                        <p class="text-xs text-slate-500">${escapeHtml(k.paket)} &middot; Kelas ${escapeHtml(k.kelas)} &middot; ${escapeHtml(k.fileName)}</p>
+                    </div>
+                    <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded whitespace-nowrap">Terkirim</span>
+                </div>
+            `).join('');
+        }
+
+        // Tugas sekarang punya target paket + kelas (seperti Kisi-Kisi), boleh
+        // menyertakan lampiran berkas soal, dan menampilkan daftar jawaban foto
+        // yang dikumpulkan siswa lewat menu Upload di Ruang Siswa mereka.
+        async function simpanTugasHandler(e) {
             e.preventDefault();
             const judul = document.getElementById('tugas-judul').value.trim();
             const deadline = document.getElementById('tugas-deadline').value;
             const deskripsi = document.getElementById('tugas-deskripsi').value.trim();
+            const paket = document.getElementById('tugas-paket').value;
+            const kelas = document.getElementById('tugas-kelas').value;
+            const fileInput = document.getElementById('tugas-file');
 
-            if (!judul || !deadline) {
-                alert('Judul dan deadline tugas wajib diisi.');
+            if (!judul || !deadline || !paket || !kelas) {
+                alert('Judul, deadline, paket, dan kelas tugas wajib diisi.');
                 return;
             }
 
+            let fileId = null;
+            let fileName = null;
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                if (fileTerlaluBesar(file)) {
+                    alert('Ukuran lampiran soal terlalu besar (maks. 25MB). Gunakan berkas yang lebih kecil.');
+                    return;
+                }
+                try {
+                    fileId = await simpanFileKeDb(file);
+                    fileName = file.name;
+                } catch (err) {
+                    console.error(err);
+                    alert('Gagal menyimpan lampiran soal. Coba lagi.');
+                    return;
+                }
+            }
+
             dataTugas.unshift({
+                id: buatIdUnik(),
                 judul,
                 deadline,
                 deskripsi,
-                tutor: tutorLoginAktif ? tutorLoginAktif.nama : '-'
+                paket,
+                kelas,
+                tutor: tutorLoginAktif ? tutorLoginAktif.nama : '-',
+                tutorId: tutorLoginAktif ? tutorLoginAktif.id : null,
+                fileId,
+                fileName
             });
             saveToStorage(STORAGE_KEYS.TUGAS, dataTugas);
             renderDaftarTugas();
             renderRuangSiswa();
 
-            alert('Tugas berhasil diterbitkan!');
+            alert(`Tugas "${judul}" berhasil diterbitkan untuk ${paket} - Kelas ${kelas}!`);
             e.target.reset();
+            updatePilihanKelasTugas();
         }
 
         function renderDaftarTugas() {
@@ -1768,16 +2054,86 @@
                 return;
             }
 
-            container.innerHTML = dataTugas.map(t => `
-                <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-start gap-3">
-                    <div>
-                        <p class="font-semibold text-sm text-slate-800">${escapeHtml(t.judul)}</p>
-                        <p class="text-xs text-slate-500">${escapeHtml(t.deskripsi || 'Tanpa deskripsi')}</p>
-                        <p class="text-[11px] text-slate-400 mt-1">Oleh: ${escapeHtml(t.tutor)}</p>
+            container.innerHTML = dataTugas.map(t => {
+                const jawabanMasuk = dataTugasJawaban.filter(j => j.tugasId === t.id);
+                return `
+                <div class="border border-slate-200 rounded-lg p-3 space-y-2">
+                    <div class="flex justify-between items-start gap-3">
+                        <div>
+                            <p class="font-semibold text-sm text-slate-800">${escapeHtml(t.judul)}</p>
+                            <p class="text-xs text-slate-500">${escapeHtml(t.deskripsi || 'Tanpa deskripsi')}</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Oleh: ${escapeHtml(t.tutor)}${t.paket ? ` &middot; ${escapeHtml(t.paket)}` : ''}${t.kelas ? ` Kelas ${escapeHtml(t.kelas)}` : ''}</p>
+                        </div>
+                        <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded whitespace-nowrap">Deadline: ${escapeHtml(t.deadline)}</span>
                     </div>
-                    <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded whitespace-nowrap">Deadline: ${escapeHtml(t.deadline)}</span>
-                </div>
-            `).join('');
+                    ${t.fileId ? `<button onclick="unduhFileDariDb('${t.fileId}', '${escapeHtml(t.fileName || 'soal')}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded inline-flex items-center gap-1.5"><i class="fa-solid fa-download"></i> Lihat Lampiran Soal</button>` : ''}
+                    <div class="pt-2 border-t border-dashed border-slate-200">
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1.5">Jawaban Masuk (${jawabanMasuk.length})</p>
+                        ${jawabanMasuk.length === 0
+                            ? '<p class="text-xs text-slate-400">Belum ada siswa yang mengumpulkan jawaban.</p>'
+                            : jawabanMasuk.map(j => `
+                                <div class="flex justify-between items-center text-xs py-1">
+                                    <span class="text-slate-700">${escapeHtml(j.siswaNama)} <span class="text-slate-400">&middot; ${escapeHtml(j.waktu)}</span></span>
+                                    <button onclick="unduhFileDariDb('${j.fileId}', '${escapeHtml(j.fileName)}')" class="text-blue-600 hover:text-blue-800 font-medium"><i class="fa-solid fa-eye mr-1"></i>Lihat</button>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Siswa mengunggah foto jawaban tugas (menggantikan jawaban lama jika sudah pernah
+        // mengirim), supaya tutor yang bersangkutan bisa melihatnya di dashboard Tugasnya.
+        async function kirimJawabanTugas(tugasId) {
+            const inputNama = document.getElementById('ruang-siswa-pilih');
+            const nama = inputNama ? inputNama.value.trim() : '';
+            const siswa = dataSiswa.find(s => s.nama.toLowerCase() === nama.toLowerCase());
+            if (!siswa) {
+                alert('Nama siswa tidak ditemukan. Pastikan Ruang Siswa sudah terbuka dengan benar.');
+                return;
+            }
+
+            const fileInput = document.getElementById(`upload-jawaban-${tugasId}`);
+            if (!fileInput || !fileInput.files.length) {
+                alert('Mohon pilih foto jawaban terlebih dahulu.');
+                return;
+            }
+            const file = fileInput.files[0];
+            if (fileTerlaluBesar(file)) {
+                alert('Ukuran berkas terlalu besar (maks. 25MB). Gunakan foto dengan ukuran lebih kecil.');
+                return;
+            }
+
+            let fileId;
+            try {
+                fileId = await simpanFileKeDb(file);
+            } catch (err) {
+                console.error(err);
+                alert('Gagal menyimpan foto jawaban ke penyimpanan browser. Coba lagi.');
+                return;
+            }
+
+            // Ganti jawaban lama milik siswa ini untuk tugas yang sama (kalau ada), supaya
+            // berkas lama yang sudah tidak relevan tidak menumpuk di penyimpanan browser.
+            const lamaIndex = dataTugasJawaban.findIndex(j => j.tugasId === tugasId && j.siswaNama === siswa.nama);
+            if (lamaIndex !== -1) {
+                hapusFileDariDb(dataTugasJawaban[lamaIndex].fileId);
+                dataTugasJawaban.splice(lamaIndex, 1);
+            }
+
+            dataTugasJawaban.unshift({
+                tugasId: tugasId,
+                siswaNama: siswa.nama,
+                fileId: fileId,
+                fileName: file.name,
+                waktu: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+            });
+            saveToStorage(STORAGE_KEYS.TUGAS_JAWABAN, dataTugasJawaban);
+
+            alert('Jawaban berhasil dikirim ke tutor!');
+            renderRuangSiswa();
+            renderDaftarTugas();
         }
 
         // Status kehadiran siswa (di dashboard tutor & Ruang Siswa) sekarang persisten per hari
@@ -1937,14 +2293,19 @@
                     </div>
                 `).join('');
 
-            // --- Sub-menu: Kisi-Kisi ---
-            const kisiKisiSaya = dataKisiKisiDefault.filter(k => k.paket === paketSaya);
+            // --- Sub-menu: Kisi-Kisi (hanya kisi-kisi yang ditujukan tepat ke paket + kelas siswa ini) ---
+            const kisiKisiSaya = dataKisiKisi.filter(k => k.paket === paketSaya && k.kelas === siswa.kelas);
             document.getElementById('ruang-siswa-kisikisi').innerHTML = kisiKisiSaya.length === 0
-                ? '<p class="text-xs text-slate-400">Belum ada kisi-kisi untuk program Anda.</p>'
+                ? '<p class="text-xs text-slate-400">Belum ada kisi-kisi untuk kelas Anda.</p>'
                 : kisiKisiSaya.map(k => `
-                    <div class="border border-slate-200 rounded-lg p-3">
-                        <p class="font-semibold text-sm text-slate-800">${escapeHtml(k.judul)}</p>
-                        <p class="text-xs text-slate-500 mt-1">${escapeHtml(k.keterangan)}</p>
+                    <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-center gap-3">
+                        <div>
+                            <p class="font-semibold text-sm text-slate-800">${escapeHtml(k.judul)}</p>
+                            <p class="text-xs text-slate-500">Pengajar: ${escapeHtml(k.tutor)} &middot; ${escapeHtml(k.fileName)}</p>
+                        </div>
+                        <button onclick="unduhFileDariDb('${k.fileId}', '${escapeHtml(k.fileName)}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fa-solid fa-download"></i> Unduh
+                        </button>
                     </div>
                 `).join('');
 
@@ -1968,19 +2329,40 @@
                     `).join('')
                 }`;
 
-            // --- Sub-menu: Tugas ---
-            document.getElementById('ruang-siswa-tugas').innerHTML = dataTugas.length === 0
-                ? '<p class="text-xs text-slate-400">Belum ada tugas yang diterbitkan.</p>'
-                : dataTugas.map(t => `
-                    <div class="border border-slate-200 rounded-lg p-3">
+            // --- Sub-menu: Tugas (hanya tugas yang ditujukan tepat ke paket + kelas siswa ini;
+            //     sediakan tombol Unduh Soal & form Upload Jawaban Foto) ---
+            const tugasSaya = dataTugas.filter(t => t.paket === paketSaya && t.kelas === siswa.kelas);
+            document.getElementById('ruang-siswa-tugas').innerHTML = tugasSaya.length === 0
+                ? '<p class="text-xs text-slate-400">Belum ada tugas untuk kelas Anda.</p>'
+                : tugasSaya.map(t => {
+                    const jawabanSaya = dataTugasJawaban.find(j => j.tugasId === t.id && j.siswaNama === siswa.nama);
+                    const inputId = `upload-jawaban-${t.id}`;
+                    return `
+                    <div class="border border-slate-200 rounded-lg p-3 space-y-2">
                         <div class="flex justify-between items-start gap-3">
                             <p class="font-semibold text-sm text-slate-800">${escapeHtml(t.judul)}</p>
                             <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded whitespace-nowrap">Deadline: ${escapeHtml(t.deadline)}</span>
                         </div>
-                        <p class="text-xs text-slate-500 mt-1">${escapeHtml(t.deskripsi || 'Tanpa deskripsi')}</p>
-                        <p class="text-[11px] text-slate-400 mt-1">Oleh: ${escapeHtml(t.tutor)}</p>
-                    </div>
-                `).join('');
+                        <p class="text-xs text-slate-500">${escapeHtml(t.deskripsi || 'Tanpa deskripsi')}</p>
+                        <p class="text-[11px] text-slate-400">Oleh: ${escapeHtml(t.tutor)}</p>
+                        ${t.fileId ? `<button onclick="unduhFileDariDb('${t.fileId}', '${escapeHtml(t.fileName || 'soal')}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded inline-flex items-center gap-1.5"><i class="fa-solid fa-download"></i> Unduh Soal</button>` : ''}
+                        <div class="pt-2 border-t border-dashed border-slate-200">
+                            ${jawabanSaya ? `
+                                <div class="flex items-center justify-between gap-2 text-xs mb-2">
+                                    <span class="text-emerald-700 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i>Jawaban terkirim (${escapeHtml(jawabanSaya.waktu)})</span>
+                                    <button onclick="unduhFileDariDb('${jawabanSaya.fileId}', '${escapeHtml(jawabanSaya.fileName)}')" class="text-blue-600 hover:text-blue-800 font-medium"><i class="fa-solid fa-eye mr-1"></i>Lihat Jawaban Saya</button>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mb-1">Unggah ulang di sini jika ingin mengganti jawaban:</p>
+                            ` : `
+                                <p class="text-[11px] text-slate-500 mb-1.5">Kerjakan tugas secara manual, foto hasilnya, lalu unggah di sini:</p>
+                            `}
+                            <div class="flex flex-wrap items-center gap-2">
+                                <input type="file" id="${inputId}" accept="image/*" class="text-[11px] text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                                <button onclick="kirimJawabanTugas('${t.id}')" class="text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3 py-1.5 rounded whitespace-nowrap"><i class="fa-solid fa-upload mr-1"></i>${jawabanSaya ? 'Ganti Jawaban' : 'Kirim Jawaban'}</button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
 
             // --- Sub-menu: Jadwal Pembelajaran ---
             const jadwalSaya = dataJadwal.filter(j => j.paket === paketSaya);
